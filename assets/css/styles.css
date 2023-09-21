@@ -190,7 +190,9 @@ img {
 }
 
 /*=== Show menu ===*/
-
+.show {
+    left: 0;
+}
 
 /*Active menu*/
 
