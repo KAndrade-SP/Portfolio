@@ -195,7 +195,9 @@ img {
 }
 
 /*Active menu*/
-
+.active {
+    color: var(--text-color);
+}
 
 /*===== HOME =====*/
 
