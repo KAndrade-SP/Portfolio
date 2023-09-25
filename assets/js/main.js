@@ -1,17 +1,23 @@
-/*===== MENU SHOW Y HIDDEN =====*/
+/*=============== SHOW MENU ===============*/
 const navMenu = document.getElementById('nav-menu'),
       toggleMenu = document.getElementById('nav-toggle'),
       closeMenu = document.getElementById('nav-close')
 
-// SHOW
-toggleMenu.addEventListener('click', () => {
-    navMenu.classList.toggle('show')
-})
+/*===== MENU SHOW =====*/
+/* Validate if constant exists */
+if(toggleMenu){
+    toggleMenu.addEventListener('click', () =>{
+        navMenu.classList.toggle('show')
+    })
+}
 
-// HIDDEN
-closeMenu.addEventListener('click', () => {
-    navMenu.classList.remove('show')
-})
+/*===== MENU HIDDEN =====*/
+/* Validate if constant exists */
+if(closeMenu){
+    closeMenu.addEventListener('click', () =>{
+        navMenu.classList.remove('show')
+    })
+}
 
 /*===== ACTIVE AND REMOVE MENU =====*/
 const navLink = document.querySelectorAll('nav__link')
