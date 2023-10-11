@@ -415,7 +415,7 @@ img {
     margin-bottom: .25rem;
 }
 
-.education__university {
+.education__university, .education__specialty {
     display: block;
     font-size: var(--smaller-font-size);
 }
