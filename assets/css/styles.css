@@ -338,6 +338,16 @@ img {
     font-size: var(--small-font-size);
 }
 
+.about__link-icon {
+    font-size: 1.5rem;
+    color: var(--first-color);
+    margin-left: var(--mb-4);
+}
+
+.about__link-icon:hover {
+    color: var(--first-color-dark);
+}
+
 /* ===== SKILLS =====*/
 .skills__container {
     row-gap: 2rem;
