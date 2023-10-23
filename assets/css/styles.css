@@ -12,12 +12,12 @@
   --font-bold: 700;
   
   /*===== Colors =====*/
-  --first-color: #CC4B2C;
-  --first-color-dark: #662616;
-  --first-color-darken: #290F09;
+  --first-color: #15CFC8;
+  --first-color-dark: #11ABA6;
+  --first-color-darken: #109E99;
   --first-color-light: #EAE7E6;
   --first-color-lighten: #FFFAFA;
-  --text-color: #54423D;
+  --text-color: #095957;
   
   /*===== Font and typography =====*/
   --body-font: 'Poppins', sans-serif;
@@ -323,6 +323,40 @@ img {
     margin-bottom: var(--mb-3);
 }
 
+.about__information-data-experience {
+    display: flex;
+    align-items: center;
+    margin-bottom: var(--mb-3);
+
+    padding: 1rem 1.5rem;
+    border: 2px solid var(--first-color);
+    border-radius: .5rem;
+}
+
+.about__information-data-experience {
+    transition: .5s;
+}
+
+.about__information-data-experience:hover {
+    background-color: var(--first-color);
+    cursor: pointer;
+}
+
+.about__information-data-experience:hover .about__information-icon {
+    color: var(--first-color-lighten);
+    cursor: pointer;
+}
+
+.about__information-data-experience:hover .about__information-subtitle {
+    color: var(--first-color-lighten);
+    cursor: pointer;
+}
+
+.about__information-data-experience:hover .about__information-subtitle-small {
+    color: var(--first-color-lighten);
+    cursor: pointer;
+}
+
 .about__information-icon {
     font-size: 1.5rem;
     color: var(--first-color);
@@ -336,16 +370,6 @@ img {
 
 .about__information-subtitle-small {
     font-size: var(--small-font-size);
-}
-
-.about__link-icon {
-    font-size: 1.5rem;
-    color: var(--first-color);
-    margin-left: var(--mb-4);
-}
-
-.about__link-icon:hover {
-    color: var(--first-color-dark);
 }
 
 /* ===== SKILLS =====*/
