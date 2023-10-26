@@ -213,19 +213,13 @@ img {
     text-align: center;
 }
 
-.home__img {
-    padding-top: 1.3rem;
-    padding-left: .8rem;
-    width: 160px;
-    height: 160px;
+.home__img img {
+    width: 155px;
+    height: 150px;
     background-color: var(--first-color);
     border-radius: 50%;
     overflow: hidden;
     margin-bottom: var(--mb-2);
-}
-
-.home__img img {
-    width: 155px;
 }
 
 .home__title {
@@ -563,7 +557,7 @@ img {
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    background: rgba(204, 75, 44, .7);
+    background: rgba(9, 89, 27, .7);
     border-radius: .5rem;
     transition: .3s;
 }
