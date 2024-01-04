@@ -215,7 +215,7 @@ img {
 
 .home__img img {
     width: 155px;
-    height: 150px;
+    height: 145px;
     background-color: var(--first-color);
     border-radius: 50%;
     overflow: hidden;
@@ -291,6 +291,7 @@ img {
 }
 
 .about__description {
+    text-align: justify;
     margin-bottom: var(--mb-4);
 }
 
