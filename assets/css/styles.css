@@ -4,7 +4,6 @@
 :root {
     --header-height: 3rem;
     --nav-width: 324px;
-
   
   /*===== Font weight =====*/
   --font-medium: 500;
@@ -12,12 +11,12 @@
   --font-bold: 700;
   
   /*===== Colors =====*/
-  --first-color: #15CFC8;
-  --first-color-dark: #11ABA6;
-  --first-color-darken: #109E99;
-  --first-color-light: #EAE7E6;
-  --first-color-lighten: #FFFAFA;
-  --text-color: #095957;
+  --first-color: #FF9F1C;
+  --first-color-dark: #F58F00;
+  --first-color-darken: #B86B00;
+  --first-color-light: #FFE6C2;
+  --first-color-lighten: #FFF7EB;
+  --text-color: #8F5300;
   
   /*===== Font and typography =====*/
   --body-font: 'Poppins', sans-serif;
@@ -163,8 +162,12 @@ img {
     top: 1rem;
     right: 1rem;
     font-size: 2rem;
-    color: var(--first-color-dark);
+    color: var(--first-color-lighten);
     cursor: pointer;
+}
+
+.nav__close:hover {
+    color: var(--text-color);
 }
 
 .nav__item {
