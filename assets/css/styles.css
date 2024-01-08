@@ -186,6 +186,10 @@ img {
     color: var(--text-color);
 }
 
+.nav__logo {
+    color: var(--first-color-dark);
+}
+
 .nav__toggle {
     color: var(--first-color-dark);
     font-size: 1.3rem;
