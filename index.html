@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Portfolio | Modern Profile</title>
-  <meta name="description" content="Modern portfolio layout with editorial structure and clean cards" />
+  <title>Portfolio | Kaique Andrade Silva Viana</title>
+  <meta name="description" content="Modern portfolio" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=Manrope:wght@400;500;700&display=swap" rel="stylesheet" />
@@ -15,81 +15,155 @@
     <aside class="sidebar">
       <div class="profile-card">
         <div class="avatar-ring">
+          <span data-bind="profile.initials">KA</span>
         </div>
-        <h1>Kaique Silva</h1>
-        <p>Test</p>
+        <h1 data-bind="profile.name">Kaique Andrade Silva Viana</h1>
+        <p data-bind="profile.role">Front-end / Full-stack Developer</p>
+      </div>
+
+      <div class="social-links">
+        <a data-bind-href="contact.linkedinHref" href="#" aria-label="LinkedIn" target="_blank" rel="noopener noreferrer">
+          <ion-icon name="logo-linkedin"></ion-icon>
+        </a>
+        <a data-bind-href="contact.githubHref" href="#" aria-label="GitHub" target="_blank" rel="noopener noreferrer">
+          <ion-icon name="logo-github"></ion-icon>
+        </a>
+        <a data-bind-href="contact.emailHref" href="#" aria-label="Email">
+          <ion-icon name="mail"></ion-icon>
+        </a>
       </div>
 
       <div class="stat-list">
-        <div><span>Age</span><strong>24</strong></div>
-        <div><span>Residence</span><strong>Residence</strong></div>
-        <div><span>Freelance</span><strong class="status-available">Freelance</strong></div>
-        <div><span>Address</span><strong>Address</strong></div>
+        <div><span>Age</span><strong data-bind="profile.age">24</strong></div>
+        <div><span>Residence</span><strong data-bind="profile.residence">Brazil</strong></div>
+        <div><span>Freelance</span><strong class="status-available" data-bind="profile.freelance">Available</strong></div>
+        <div><span>Address</span><strong data-bind="profile.address">Embu das Artes, SP</strong></div>
       </div>
 
       <div class="lang-block">
         <h2>Languages</h2>
-        <p>Test</p>
+        <p data-bind="profile.languageSummary">English (Intermediate)</p>
       </div>
 
-      <a class="resume-btn" href="#contact">Download CV</a>
+      <a class="resume-btn" href="#contact" data-bind="profile.primaryCtaLabel" data-bind-href="profile.primaryCtaHref">Contact</a>
     </aside>
 
     <main class="content-area">
       <section id="resume" class="hero">
         <div class="hero-copy">
-          <p class="eyebrow">Portfolio</p>
-          <h2>Test.</h2>
-          <p>Test</p>
-          <a href="#projects" class="hero-cta">View Projects</a>
+          <p class="eyebrow" data-bind="profile.eyebrow">Professional Summary</p>
+          <h2 data-bind="profile.headline">I build conversion-focused web experiences with strong front-end execution.</h2>
+          <p data-bind="profile.objective">
+            Looking for opportunities to apply and improve my front-end and full-stack skills while contributing to reliable solutions.
+          </p>
+          <a href="#experience" class="hero-cta" data-bind="profile.heroCtaLabel">Explore Timeline</a>
         </div>
         <div class="hero-visual">
+          <svg viewBox="0 0 320 260" role="img" aria-label="Decorative abstract profile visualization">
+            <defs>
+              <linearGradient id="shapeA" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0%" stop-color="#f4b400"/>
+                <stop offset="100%" stop-color="#f6d679"/>
+              </linearGradient>
+              <linearGradient id="shapeB" x1="0" y1="1" x2="1" y2="0">
+                <stop offset="0%" stop-color="#d8deef"/>
+                <stop offset="100%" stop-color="#ffffff"/>
+              </linearGradient>
+            </defs>
+            <rect x="0" y="0" width="320" height="260" rx="22" fill="url(#shapeB)" />
+            <circle cx="102" cy="96" r="66" fill="url(#shapeA)" opacity="0.95" />
+            <circle cx="224" cy="88" r="44" fill="#ffffff" opacity="0.85" />
+            <path d="M56 190 C90 156, 160 146, 248 188" stroke="#1d2433" stroke-width="6" fill="none" stroke-linecap="round" opacity="0.14" />
+            <rect x="62" y="166" width="132" height="18" rx="9" fill="#1d2433" opacity="0.1" />
+            <rect x="62" y="194" width="94" height="12" rx="6" fill="#1d2433" opacity="0.08" />
+          </svg>
+          <div class="insight-grid" data-render="highlights"></div>
         </div>
       </section>
 
       <section id="experience" class="section-card">
-        <h3>Professional Experience</h3>
-        <p>Test</p>
+        <div class="section-head">
+          <h3>Professional Experience</h3>
+          <p data-bind="experience.summary">Timeline of internships and junior roles with front-end focus.</p>
+        </div>
+        <div class="timeline" data-render="experience"></div>
       </section>
 
       <section id="education" class="section-card">
-        <h3>Education</h3>
-        <p>Test</p>
+        <div class="section-head">
+          <h3>Education</h3>
+          <p data-bind="education.summary">Academic background in systems development and networking.</p>
+        </div>
+        <div class="timeline timeline-academic" data-render="education"></div>
       </section>
 
       <section id="projects" class="section-stack">
         <div class="section-head">
-          <h3>Featured Services</h3>
-          <p>Test</p>
+          <h3>Focus Areas</h3>
+          <p data-bind="projects.summary">Core delivery fronts where I generate value.</p>
         </div>
-        <div class="service-grid">
-          <article class="service-card"><h4>Web Development</h4><p>Test</p></article>
-          <article class="service-card"><h4>UI Design</h4><p>Test</p></article>
-          <article class="service-card"><h4>Performance</h4><p>Test</p></article>
-          <article class="service-card"><h4>Accessibility</h4><p>Test</p></article>
-          <article class="service-card"><h4>Maintenance</h4><p>Test</p></article>
-          <article class="service-card"><h4>Consulting</h4><p>Test</p></article>
-        </div>
+        <div class="service-grid" data-render="focus-areas"></div>
       </section>
 
       <section id="certifications" class="section-card">
-        <h3>Certifications</h3>
-        <p>Test</p>
+        <div class="section-head">
+          <h3>Certifications</h3>
+          <p data-bind="certifications.summary">Validated technical knowledge and continuous learning track.</p>
+        </div>
+        <div class="cert-grid" data-render="certifications"></div>
       </section>
 
       <section id="skills" class="section-card">
-        <h3>Skills</h3>
-        <p>Test</p>
+        <div class="section-head">
+          <h3>Skills</h3>
+          <p data-bind="skills.summary">Technology stack organized by practical usage domains.</p>
+        </div>
+        <div class="skills-grid" data-render="skills"></div>
       </section>
 
       <section id="languages" class="section-card">
-        <h3>Languages</h3>
-        <p>Test</p>
+        <div class="section-head">
+          <h3>Languages</h3>
+          <p data-bind="languages.summary">Communication proficiency relevant for team and product contexts.</p>
+        </div>
+        <div class="language-grid" data-render="languages"></div>
       </section>
 
       <section id="contact" class="section-card">
-        <h3>Contact</h3>
-        <p>Test</p>
+        <div class="section-head">
+          <h3>Contact</h3>
+          <p>Open to opportunities in front-end and full-stack development.</p>
+        </div>
+        <div class="contact-grid">
+          <a class="contact-card" data-bind-href="contact.emailHref" href="#">
+            <ion-icon name="mail-open"></ion-icon>
+            <div>
+              <span>Email</span>
+              <strong data-bind="contact.emailLabel">kaique.viana090@gmail.com</strong>
+            </div>
+          </a>
+          <a class="contact-card" data-bind-href="contact.linkedinHref" href="#" target="_blank" rel="noopener noreferrer">
+            <ion-icon name="logo-linkedin"></ion-icon>
+            <div>
+              <span>LinkedIn</span>
+              <strong data-bind="contact.linkedinLabel">LinkedIn Profile</strong>
+            </div>
+          </a>
+          <a class="contact-card" data-bind-href="contact.githubHref" href="#" target="_blank" rel="noopener noreferrer">
+            <ion-icon name="logo-github"></ion-icon>
+            <div>
+              <span>GitHub</span>
+              <strong data-bind="contact.githubLabel">KAndrade-SP</strong>
+            </div>
+          </a>
+          <a class="contact-card" data-bind-href="contact.phoneHref" href="#">
+            <ion-icon name="call"></ion-icon>
+            <div>
+              <span>Phone</span>
+              <strong data-bind="contact.phoneLabel">+55 11 96813-9649</strong>
+            </div>
+          </a>
+        </div>
       </section>
     </main>
   </div>
