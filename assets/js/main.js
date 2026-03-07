@@ -49,6 +49,27 @@
     }
   };
 
+  const sanitizeImageSrc = (value) => {
+    if (typeof value !== "string") return "";
+    const src = value.trim();
+    if (!src) return "";
+
+    try {
+      const parsed = new URL(src, window.location.origin);
+      if (parsed.protocol !== "https:") return "";
+
+      if (parsed.hostname === "imgur.com" || parsed.hostname === "www.imgur.com") {
+        const rawId = parsed.pathname.replaceAll("/", "").split(".")[0];
+        if (!rawId) return "";
+        return `https://i.imgur.com/${rawId}.jpg`;
+      }
+
+      return parsed.href;
+    } catch {
+      return "";
+    }
+  };
+
   const createIcon = (name, fallback) => {
     const icon = createElement("ion-icon");
     icon.setAttribute("name", sanitizeIconName(name, fallback));
@@ -198,27 +219,99 @@
     container.appendChild(fragment);
   };
 
-  const renderFocusAreas = () => {
-    const container = document.querySelector('[data-render="focus-areas"]');
-    const items = data.projects?.focusAreas || [];
+  const renderProjects = () => {
+    const container = document.querySelector('[data-render="projects"]');
+    const items = data.projects?.list || [];
     if (!container || !Array.isArray(items)) return;
 
     clearElement(container);
     const fragment = document.createDocumentFragment();
 
     items.forEach((item) => {
-      const card = createElement("article", "service-card");
-      const iconWrap = createElement("span", "service-icon");
-      iconWrap.appendChild(createIcon(item.icon, "square"));
+      const card = createElement("article", "project-card");
+      card.classList.add("is-inview");
 
-      const title = createElement("h4");
-      setText(title, item.title || "");
-      const description = createElement("p");
+      const isFeatured = String(item.type || "").toLowerCase() === "featured";
+      if (isFeatured) {
+        card.classList.add("is-featured");
+      }
+
+      const preview = createElement("figure", "project-preview");
+      const previewImage = createElement("img", "project-preview-image");
+      const imageSrc = sanitizeImageSrc(item.previewImage || "");
+      if (imageSrc) {
+        previewImage.src = imageSrc;
+        if (imageSrc.includes("i.imgur.com/") && imageSrc.endsWith(".jpg")) {
+          previewImage.dataset.fallbackStep = "0";
+          previewImage.addEventListener("error", () => {
+            const currentStep = Number(previewImage.dataset.fallbackStep || "0");
+            const fallbackExt = [".png", ".jpeg", ".webp"][currentStep];
+            if (!fallbackExt) return;
+            previewImage.dataset.fallbackStep = String(currentStep + 1);
+            previewImage.src = imageSrc.replace(".jpg", fallbackExt);
+          });
+        }
+      }
+
+      previewImage.alt = typeof item.previewAlt === "string" && item.previewAlt.length > 0 ? item.previewAlt : `${item.name || "Project"} preview`;
+      previewImage.loading = "lazy";
+      previewImage.decoding = "async";
+      preview.appendChild(previewImage);
+
+      const overlay = createElement("div", "project-overlay");
+
+      const head = createElement("div", "project-head");
+      const iconWrap = createElement("span", "project-icon");
+      iconWrap.appendChild(createIcon(item.icon, "layers"));
+
+      const info = createElement("div", "project-title-wrap");
+      const title = createElement("h4", "project-title");
+      setText(title, item.name || "");
+      const meta = createElement("p", "project-meta");
+      setText(meta, `${item.type || "Project"} - ${item.ownership || "Solo"}`);
+      info.appendChild(title);
+      info.appendChild(meta);
+
+      const status = createElement("span", "project-status");
+      setText(status, item.status || "");
+
+      head.appendChild(iconWrap);
+      head.appendChild(info);
+      head.appendChild(status);
+
+      const description = createElement("p", "project-description");
       setText(description, item.description || "");
 
-      card.appendChild(iconWrap);
-      card.appendChild(title);
-      card.appendChild(description);
+      const stack = createElement("div", "project-stack");
+      (item.stack || []).forEach((tech) => {
+        const chip = createElement("span");
+        setText(chip, tech);
+        stack.appendChild(chip);
+      });
+
+      const actions = createElement("div", "project-actions");
+      const repoLink = createElement("a", "project-link");
+      repoLink.setAttribute("href", sanitizeHref(item.repoUrl || "#"));
+      repoLink.setAttribute("target", "_blank");
+      repoLink.setAttribute("rel", "noopener noreferrer");
+      setText(repoLink, "Repository");
+      actions.appendChild(repoLink);
+
+      if (item.demoUrl) {
+        const demoLink = createElement("a", "project-link project-link-demo");
+        demoLink.setAttribute("href", sanitizeHref(item.demoUrl));
+        demoLink.setAttribute("target", "_blank");
+        demoLink.setAttribute("rel", "noopener noreferrer");
+        setText(demoLink, "Live Demo");
+        actions.appendChild(demoLink);
+      }
+
+      overlay.appendChild(head);
+      overlay.appendChild(description);
+      overlay.appendChild(stack);
+      overlay.appendChild(actions);
+      preview.appendChild(overlay);
+      card.appendChild(preview);
       fragment.appendChild(card);
     });
 
@@ -340,10 +433,172 @@
   renderHighlights();
   renderTimeline('[data-render="experience"]', data.experience?.timeline || []);
   renderTimeline('[data-render="education"]', data.education?.timeline || [], true);
-  renderFocusAreas();
+  renderProjects();
   renderCertifications();
   renderSkills();
   renderLanguages();
+
+  const projectCarousel = document.querySelector('[data-render="projects-carousel"]');
+  const projectTrack = document.querySelector('[data-render="projects"]');
+  const projectDots = document.querySelector('[data-render="project-dots"]');
+  const projectMobilePanel = document.querySelector('[data-render="project-mobile-panel"]');
+  const projectPrev = projectCarousel?.querySelector('[data-action="projects-prev"]');
+  const projectNext = projectCarousel?.querySelector('[data-action="projects-next"]');
+
+  if (projectCarousel && projectTrack && projectPrev && projectNext && projectDots) {
+    const cards = Array.from(projectTrack.querySelectorAll(".project-card"));
+    const dots = [];
+    let activeIndex = 0;
+    const projectItems = Array.isArray(data.projects?.list) ? data.projects.list : [];
+
+    if (cards.length <= 1) {
+      projectPrev.setAttribute("hidden", "hidden");
+      projectNext.setAttribute("hidden", "hidden");
+    }
+
+    const getSlideWidth = () => projectTrack.getBoundingClientRect().width || 0;
+
+    const getNearestIndex = () => {
+      const slideWidth = getSlideWidth();
+      if (slideWidth <= 0) return 0;
+      return Math.max(0, Math.min(cards.length - 1, Math.round(projectTrack.scrollLeft / slideWidth)));
+    };
+
+    const setActiveDot = (index) => {
+      dots.forEach((dot, dotIndex) => {
+        const isActive = dotIndex === index;
+        dot.classList.toggle("is-active", isActive);
+        dot.setAttribute("aria-current", isActive ? "true" : "false");
+      });
+    };
+
+    const renderMobilePanel = (index) => {
+      if (!projectMobilePanel) return;
+      const item = projectItems[index];
+      clearElement(projectMobilePanel);
+      if (!item) return;
+
+      const panel = createElement("article", "project-mobile-content");
+      const head = createElement("div", "project-head");
+      const iconWrap = createElement("span", "project-icon");
+      iconWrap.appendChild(createIcon(item.icon, "layers"));
+
+      const info = createElement("div", "project-title-wrap");
+      const title = createElement("h4", "project-title");
+      setText(title, item.name || "");
+      const meta = createElement("p", "project-meta");
+      setText(meta, `${item.type || "Project"} - ${item.ownership || "Solo"}`);
+      info.appendChild(title);
+      info.appendChild(meta);
+
+      const status = createElement("span", "project-status");
+      setText(status, item.status || "");
+
+      head.appendChild(iconWrap);
+      head.appendChild(info);
+      head.appendChild(status);
+
+      const description = createElement("p", "project-description");
+      setText(description, item.description || "");
+
+      const stack = createElement("div", "project-stack");
+      (item.stack || []).forEach((tech) => {
+        const chip = createElement("span");
+        setText(chip, tech);
+        stack.appendChild(chip);
+      });
+
+      const actions = createElement("div", "project-actions");
+      const repoLink = createElement("a", "project-link");
+      repoLink.setAttribute("href", sanitizeHref(item.repoUrl || "#"));
+      repoLink.setAttribute("target", "_blank");
+      repoLink.setAttribute("rel", "noopener noreferrer");
+      setText(repoLink, "Repository");
+      actions.appendChild(repoLink);
+
+      if (item.demoUrl) {
+        const demoLink = createElement("a", "project-link project-link-demo");
+        demoLink.setAttribute("href", sanitizeHref(item.demoUrl));
+        demoLink.setAttribute("target", "_blank");
+        demoLink.setAttribute("rel", "noopener noreferrer");
+        setText(demoLink, "Live Demo");
+        actions.appendChild(demoLink);
+      }
+
+      panel.appendChild(head);
+      panel.appendChild(description);
+      panel.appendChild(stack);
+      panel.appendChild(actions);
+      projectMobilePanel.appendChild(panel);
+    };
+
+    const scrollToIndex = (index) => {
+      const bounded = Math.max(0, Math.min(cards.length - 1, index));
+      const slideWidth = getSlideWidth();
+      if (slideWidth <= 0) return;
+      activeIndex = bounded;
+      projectTrack.scrollTo({
+        left: slideWidth * bounded,
+        behavior: "smooth",
+      });
+      setActiveDot(bounded);
+      renderMobilePanel(bounded);
+    };
+
+    cards.forEach((_, index) => {
+      const dot = createElement("button", "project-dot");
+      dot.type = "button";
+      dot.setAttribute("aria-label", `Go to project ${index + 1}`);
+      dot.addEventListener("click", () => scrollToIndex(index));
+      projectDots.appendChild(dot);
+      dots.push(dot);
+    });
+
+    setActiveDot(0);
+    renderMobilePanel(0);
+
+    let scrollFrame = 0;
+    projectTrack.addEventListener("scroll", () => {
+      if (scrollFrame) return;
+      scrollFrame = window.requestAnimationFrame(() => {
+        const current = getNearestIndex();
+        activeIndex = current;
+        setActiveDot(current);
+        renderMobilePanel(current);
+        scrollFrame = 0;
+      });
+    });
+
+    projectPrev.addEventListener("click", () => {
+      scrollToIndex(getNearestIndex() - 1);
+    });
+
+    projectNext.addEventListener("click", () => {
+      scrollToIndex(getNearestIndex() + 1);
+    });
+
+    projectCarousel.addEventListener("keydown", (event) => {
+      if (event.key === "ArrowLeft") {
+        event.preventDefault();
+        scrollToIndex(getNearestIndex() - 1);
+      }
+      if (event.key === "ArrowRight") {
+        event.preventDefault();
+        scrollToIndex(getNearestIndex() + 1);
+      }
+    });
+
+    window.addEventListener("resize", () => {
+      const slideWidth = getSlideWidth();
+      if (slideWidth <= 0) return;
+      projectTrack.scrollTo({
+        left: slideWidth * activeIndex,
+        behavior: "auto",
+      });
+      setActiveDot(activeIndex);
+      renderMobilePanel(activeIndex);
+    });
+  }
 
   const quickRail = document.querySelector(".quick-rail");
   const quickToggle = document.querySelector(".quick-toggle");

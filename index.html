@@ -99,10 +99,22 @@
 
       <section id="projects" class="section-stack">
         <div class="section-head">
-          <h3>Focus Areas</h3>
-          <p data-bind="projects.summary">Core delivery fronts where I generate value.</p>
+          <h3>Projects</h3>
+          <p data-bind="projects.summary">Selected repositories with practical delivery scope and implementation details.</p>
         </div>
-        <div class="service-grid" data-render="focus-areas"></div>
+        <div class="project-carousel" data-render="projects-carousel">
+          <button class="project-nav project-nav-prev" type="button" data-action="projects-prev" aria-label="Previous project">
+            <ion-icon name="chevron-back"></ion-icon>
+          </button>
+          <div class="project-track-wrap">
+            <div class="project-track" data-render="projects"></div>
+          </div>
+          <button class="project-nav project-nav-next" type="button" data-action="projects-next" aria-label="Next project">
+            <ion-icon name="chevron-forward"></ion-icon>
+          </button>
+        </div>
+        <div class="project-mobile-panel" data-render="project-mobile-panel"></div>
+        <div class="project-dots" data-render="project-dots" aria-label="Project slide selectors"></div>
       </section>
 
       <section id="certifications" class="section-card">
