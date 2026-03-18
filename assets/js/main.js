@@ -96,6 +96,15 @@
     return link;
   };
 
+  const prepareRevealItems = (elements, { variant = "motion-reveal-soft", baseDelay = 0, step = 55 } = {}) => {
+    elements
+      .filter((element) => element instanceof Element)
+      .forEach((element, index) => {
+        element.classList.add("motion-reveal", variant);
+        element.style.setProperty("--reveal-delay", `${baseDelay + index * step}ms`);
+      });
+  };
+
   const logoMap = {
     React: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/react/react-original.svg",
     "React Native": "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/react/react-original.svg",
@@ -171,11 +180,13 @@
     clearElement(container);
     const fragment = document.createDocumentFragment();
 
-    items.forEach((item) => {
+    items.forEach((item, index) => {
       const role = isAcademic ? item.title : item.role;
       const company = isAcademic ? item.school : item.company;
 
       const article = createElement("article", "timeline-item");
+      article.classList.add("motion-reveal", "motion-reveal-side");
+      article.style.setProperty("--reveal-delay", `${index * 70}ms`);
       const marker = createElement("span", "timeline-marker");
       marker.appendChild(createIcon(item.icon, "ellipse"));
 
@@ -247,9 +258,10 @@
     clearElement(container);
     const fragment = document.createDocumentFragment();
 
-    items.forEach((item) => {
+    items.forEach((item, index) => {
       const card = createElement("article", "project-card");
-      card.classList.add("is-inview");
+      card.classList.add("motion-reveal", "motion-reveal-pop");
+      card.style.setProperty("--reveal-delay", `${index * 75}ms`);
 
       const isFeatured = String(item.type || "").toLowerCase() === "featured";
       if (isFeatured) {
@@ -296,6 +308,7 @@
       setText(status, item.status || "");
       head.appendChild(iconWrap);
       head.appendChild(info);
+      head.appendChild(status);
 
       const description = createElement("p", "project-description");
       setText(description, item.description || "");
@@ -352,8 +365,10 @@
     clearElement(container);
     const fragment = document.createDocumentFragment();
 
-    items.forEach((item) => {
+    items.forEach((item, index) => {
       const card = createElement("article", "cert-card");
+      card.classList.add("motion-reveal", "motion-reveal-soft");
+      card.style.setProperty("--reveal-delay", `${index * 55}ms`);
       card.appendChild(createIcon(item.icon, "ribbon"));
 
       const content = createElement("div");
@@ -382,8 +397,10 @@
     clearElement(container);
     const fragment = document.createDocumentFragment();
 
-    items.forEach((category) => {
+    items.forEach((category, index) => {
       const card = createElement("article", "skill-card");
+      card.classList.add("motion-reveal", "motion-reveal-soft");
+      card.style.setProperty("--reveal-delay", `${index * 50}ms`);
       const title = createElement("h4");
       setText(title, category.title || "");
 
@@ -431,8 +448,10 @@
     clearElement(container);
     const fragment = document.createDocumentFragment();
 
-    items.forEach((item) => {
+    items.forEach((item, index) => {
       const article = createElement("article", "language-item");
+      article.classList.add("motion-reveal", "motion-reveal-soft");
+      article.style.setProperty("--reveal-delay", `${index * 50}ms`);
       const top = createElement("div", "language-top");
       const name = createElement("strong");
       setText(name, item.name || "");
@@ -464,6 +483,39 @@
   renderSkills();
   renderLanguages();
 
+  prepareRevealItems(
+    [
+      document.querySelector(".profile-card"),
+      document.querySelector(".social-links"),
+      document.querySelector(".stat-list"),
+      document.querySelector(".lang-block"),
+      document.querySelector(".resume-btn"),
+    ],
+    { variant: "motion-reveal-soft", step: 65 }
+  );
+
+  prepareRevealItems(
+    [
+      document.querySelector(".hero-copy .eyebrow"),
+      document.querySelector(".hero-copy h2"),
+      document.querySelector(".hero-copy p"),
+      document.querySelector(".hero-cta"),
+      document.querySelector(".hero-visual"),
+      ...document.querySelectorAll(".insight-chip"),
+    ],
+    { variant: "motion-reveal-soft", baseDelay: 40, step: 75 }
+  );
+
+  document.querySelectorAll(".section-head").forEach((head, index) => {
+    head.classList.add("motion-reveal", "motion-reveal-soft");
+    head.style.setProperty("--reveal-delay", `${index * 35}ms`);
+  });
+
+  prepareRevealItems(Array.from(document.querySelectorAll(".contact-card")), {
+    variant: "motion-reveal-soft",
+    step: 55,
+  });
+
   const projectCarousel = document.querySelector('[data-render="projects-carousel"]');
   const projectTrack = document.querySelector('[data-render="projects"]');
   const projectDots = document.querySelector('[data-render="project-dots"]');
@@ -478,9 +530,15 @@
     let renderedMobileIndex = -1;
     const projectItems = Array.isArray(data.projects?.list) ? data.projects.list : [];
     const mobileMedia = window.matchMedia("(max-width: 1023px)");
+    const reducedMotionMedia = window.matchMedia("(prefers-reduced-motion: reduce)");
     let mobilePanelTimer = 0;
     let scrollFrame = 0;
     let scrollEndTimer = 0;
+    let autoplayTimer = 0;
+    let autoplayResumeTimer = 0;
+    let hoverLocked = false;
+    let focusLocked = false;
+    let touchLocked = false;
 
     if (cards.length <= 1) {
       projectPrev.setAttribute("hidden", "hidden");
@@ -501,6 +559,41 @@
         dot.classList.toggle("is-active", isActive);
         dot.setAttribute("aria-current", isActive ? "true" : "false");
       });
+    };
+
+    const clearAutoplay = () => {
+      if (autoplayTimer) {
+        window.clearTimeout(autoplayTimer);
+        autoplayTimer = 0;
+      }
+      if (autoplayResumeTimer) {
+        window.clearTimeout(autoplayResumeTimer);
+        autoplayResumeTimer = 0;
+      }
+    };
+
+    const canAutoplay = () =>
+      cards.length > 1 &&
+      !reducedMotionMedia.matches &&
+      !hoverLocked &&
+      !focusLocked &&
+      !touchLocked &&
+      !document.hidden;
+
+    const scheduleAutoplay = (delay = 4800) => {
+      clearAutoplay();
+      if (!canAutoplay()) return;
+      autoplayTimer = window.setTimeout(() => {
+        scrollToIndex((activeIndex + 1) % cards.length, { fromAutoplay: true });
+      }, delay);
+    };
+
+    const resumeAutoplay = (delay = 5200) => {
+      clearAutoplay();
+      if (!canAutoplay()) return;
+      autoplayResumeTimer = window.setTimeout(() => {
+        scheduleAutoplay();
+      }, delay);
     };
 
     const renderMobilePanelContent = (index) => {
@@ -600,7 +693,7 @@
       }, 130);
     };
 
-    const scrollToIndex = (index) => {
+    const scrollToIndex = (index, { fromAutoplay = false } = {}) => {
       const bounded = Math.max(0, Math.min(cards.length - 1, index));
       const slideWidth = getSlideWidth();
       if (slideWidth <= 0) return;
@@ -611,19 +704,26 @@
       });
       setActiveDot(bounded);
       renderMobilePanel(bounded, { animate: true });
+      if (fromAutoplay) {
+        scheduleAutoplay();
+      }
     };
 
     cards.forEach((_, index) => {
       const dot = createElement("button", "project-dot");
       dot.type = "button";
       dot.setAttribute("aria-label", `Go to project ${index + 1}`);
-      dot.addEventListener("click", () => scrollToIndex(index));
+      dot.addEventListener("click", () => {
+        scrollToIndex(index);
+        resumeAutoplay(6200);
+      });
       projectDots.appendChild(dot);
       dots.push(dot);
     });
 
     setActiveDot(0);
     renderMobilePanel(0);
+    scheduleAutoplay(4200);
 
     projectTrack.addEventListener("scroll", () => {
       if (scrollFrame) return;
@@ -637,6 +737,7 @@
         scrollEndTimer = window.setTimeout(() => {
           if (current === renderedMobileIndex) return;
           renderMobilePanel(current, { animate: true });
+          resumeAutoplay();
         }, 110);
         scrollFrame = 0;
       });
@@ -644,20 +745,24 @@
 
     projectPrev.addEventListener("click", () => {
       scrollToIndex(getNearestIndex() - 1);
+      resumeAutoplay(6200);
     });
 
     projectNext.addEventListener("click", () => {
       scrollToIndex(getNearestIndex() + 1);
+      resumeAutoplay(6200);
     });
 
     projectCarousel.addEventListener("keydown", (event) => {
       if (event.key === "ArrowLeft") {
         event.preventDefault();
         scrollToIndex(getNearestIndex() - 1);
+        resumeAutoplay(6200);
       }
       if (event.key === "ArrowRight") {
         event.preventDefault();
         scrollToIndex(getNearestIndex() + 1);
+        resumeAutoplay(6200);
       }
     });
 
@@ -670,6 +775,58 @@
       });
       setActiveDot(activeIndex);
       renderMobilePanel(activeIndex);
+      resumeAutoplay(3400);
+    });
+
+    projectCarousel.addEventListener("mouseenter", () => {
+      hoverLocked = true;
+      clearAutoplay();
+    });
+
+    projectCarousel.addEventListener("mouseleave", () => {
+      hoverLocked = false;
+      resumeAutoplay(2600);
+    });
+
+    projectCarousel.addEventListener("focusin", () => {
+      focusLocked = true;
+      clearAutoplay();
+    });
+
+    projectCarousel.addEventListener("focusout", (event) => {
+      if (event.relatedTarget instanceof Node && projectCarousel.contains(event.relatedTarget)) return;
+      focusLocked = false;
+      resumeAutoplay(3200);
+    });
+
+    projectCarousel.addEventListener(
+      "touchstart",
+      () => {
+        touchLocked = true;
+        clearAutoplay();
+      },
+      { passive: true }
+    );
+
+    const releaseTouchLock = () => {
+      touchLocked = false;
+      resumeAutoplay(5200);
+    };
+
+    projectCarousel.addEventListener("touchend", releaseTouchLock, { passive: true });
+    projectCarousel.addEventListener("touchcancel", releaseTouchLock, { passive: true });
+
+    document.addEventListener("visibilitychange", () => {
+      if (document.hidden) {
+        clearAutoplay();
+        return;
+      }
+      resumeAutoplay(2800);
+    });
+
+    reducedMotionMedia.addEventListener("change", () => {
+      if (reducedMotionMedia.matches) clearAutoplay();
+      else resumeAutoplay(3200);
     });
 
     if (projectMobilePanel) {
@@ -679,6 +836,8 @@
       projectMobilePanel.addEventListener(
         "touchstart",
         (event) => {
+          touchLocked = true;
+          clearAutoplay();
           const target = event.target;
           if (target instanceof Element && target.closest("a")) {
             touchStartX = 0;
@@ -706,13 +865,46 @@
 
           touchStartX = 0;
           touchStartY = 0;
+          touchLocked = false;
 
-          if (Math.abs(deltaX) < 42 || Math.abs(deltaX) <= Math.abs(deltaY)) return;
+          if (Math.abs(deltaX) < 42 || Math.abs(deltaX) <= Math.abs(deltaY)) {
+            resumeAutoplay(4200);
+            return;
+          }
           scrollToIndex(getNearestIndex() + (deltaX < 0 ? 1 : -1));
+          resumeAutoplay(5600);
+        },
+        { passive: true }
+      );
+
+      projectMobilePanel.addEventListener(
+        "touchcancel",
+        () => {
+          touchLocked = false;
+          resumeAutoplay(4200);
         },
         { passive: true }
       );
     }
+  }
+
+  const revealTargets = Array.from(document.querySelectorAll(".motion-reveal"));
+  if (revealTargets.length > 0) {
+    const revealObserver = new IntersectionObserver(
+      (entries, observer) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting) return;
+          entry.target.classList.add("is-inview");
+          observer.unobserve(entry.target);
+        });
+      },
+      {
+        rootMargin: "0px 0px -12% 0px",
+        threshold: 0.14,
+      },
+    );
+
+    revealTargets.forEach((target) => revealObserver.observe(target));
   }
 
   const quickRail = document.querySelector(".quick-rail");
