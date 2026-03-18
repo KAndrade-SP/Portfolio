@@ -76,6 +76,26 @@
     return icon;
   };
 
+  const createProjectActionLink = ({ href, className, label, iconName }) => {
+    const link = createElement("a", className);
+    link.setAttribute("href", sanitizeHref(href || "#"));
+    link.setAttribute("target", "_blank");
+    link.setAttribute("rel", "noopener noreferrer");
+    link.setAttribute("aria-label", label);
+    link.setAttribute("title", label);
+
+    const icon = createIcon(iconName, "open-outline");
+    icon.className = "project-link-icon";
+
+    const text = createElement("span", "project-link-label");
+    setText(text, label);
+
+    link.appendChild(icon);
+    link.appendChild(text);
+
+    return link;
+  };
+
   const logoMap = {
     React: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/react/react-original.svg",
     "React Native": "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/react/react-original.svg",
@@ -274,13 +294,14 @@
 
       const status = createElement("span", "project-status");
       setText(status, item.status || "");
-
       head.appendChild(iconWrap);
       head.appendChild(info);
-      head.appendChild(status);
 
       const description = createElement("p", "project-description");
       setText(description, item.description || "");
+
+      const body = createElement("div", "project-body");
+      body.appendChild(description);
 
       const stack = createElement("div", "project-stack");
       (item.stack || []).forEach((tech) => {
@@ -290,26 +311,31 @@
       });
 
       const actions = createElement("div", "project-actions");
-      const repoLink = createElement("a", "project-link");
-      repoLink.setAttribute("href", sanitizeHref(item.repoUrl || "#"));
-      repoLink.setAttribute("target", "_blank");
-      repoLink.setAttribute("rel", "noopener noreferrer");
-      setText(repoLink, "Repository");
+      const repoLink = createProjectActionLink({
+        href: item.repoUrl || "#",
+        className: "project-link",
+        label: "Repository",
+        iconName: "logo-github",
+      });
       actions.appendChild(repoLink);
 
       if (item.demoUrl) {
-        const demoLink = createElement("a", "project-link project-link-demo");
-        demoLink.setAttribute("href", sanitizeHref(item.demoUrl));
-        demoLink.setAttribute("target", "_blank");
-        demoLink.setAttribute("rel", "noopener noreferrer");
-        setText(demoLink, "Live Demo");
+        const demoLink = createProjectActionLink({
+          href: item.demoUrl,
+          className: "project-link project-link-demo",
+          label: "Live Demo",
+          iconName: "open-outline",
+        });
         actions.appendChild(demoLink);
       }
 
+      const foot = createElement("div", "project-foot");
+      foot.appendChild(stack);
+      foot.appendChild(actions);
+
       overlay.appendChild(head);
-      overlay.appendChild(description);
-      overlay.appendChild(stack);
-      overlay.appendChild(actions);
+      overlay.appendChild(body);
+      overlay.appendChild(foot);
       preview.appendChild(overlay);
       card.appendChild(preview);
       fragment.appendChild(card);
@@ -449,7 +475,12 @@
     const cards = Array.from(projectTrack.querySelectorAll(".project-card"));
     const dots = [];
     let activeIndex = 0;
+    let renderedMobileIndex = -1;
     const projectItems = Array.isArray(data.projects?.list) ? data.projects.list : [];
+    const mobileMedia = window.matchMedia("(max-width: 1023px)");
+    let mobilePanelTimer = 0;
+    let scrollFrame = 0;
+    let scrollEndTimer = 0;
 
     if (cards.length <= 1) {
       projectPrev.setAttribute("hidden", "hidden");
@@ -472,7 +503,7 @@
       });
     };
 
-    const renderMobilePanel = (index) => {
+    const renderMobilePanelContent = (index) => {
       if (!projectMobilePanel) return;
       const item = projectItems[index];
       clearElement(projectMobilePanel);
@@ -501,6 +532,9 @@
       const description = createElement("p", "project-description");
       setText(description, item.description || "");
 
+      const body = createElement("div", "project-body");
+      body.appendChild(description);
+
       const stack = createElement("div", "project-stack");
       (item.stack || []).forEach((tech) => {
         const chip = createElement("span");
@@ -509,27 +543,61 @@
       });
 
       const actions = createElement("div", "project-actions");
-      const repoLink = createElement("a", "project-link");
-      repoLink.setAttribute("href", sanitizeHref(item.repoUrl || "#"));
-      repoLink.setAttribute("target", "_blank");
-      repoLink.setAttribute("rel", "noopener noreferrer");
-      setText(repoLink, "Repository");
+      const repoLink = createProjectActionLink({
+        href: item.repoUrl || "#",
+        className: "project-link",
+        label: "Repository",
+        iconName: "logo-github",
+      });
       actions.appendChild(repoLink);
 
       if (item.demoUrl) {
-        const demoLink = createElement("a", "project-link project-link-demo");
-        demoLink.setAttribute("href", sanitizeHref(item.demoUrl));
-        demoLink.setAttribute("target", "_blank");
-        demoLink.setAttribute("rel", "noopener noreferrer");
-        setText(demoLink, "Live Demo");
+        const demoLink = createProjectActionLink({
+          href: item.demoUrl,
+          className: "project-link project-link-demo",
+          label: "Live Demo",
+          iconName: "open-outline",
+        });
         actions.appendChild(demoLink);
       }
 
+      const toolbar = createElement("div", "project-mobile-toolbar");
+      toolbar.appendChild(status);
+      toolbar.appendChild(actions);
+
+      const foot = createElement("div", "project-foot");
+      foot.appendChild(stack);
+
       panel.appendChild(head);
-      panel.appendChild(description);
-      panel.appendChild(stack);
-      panel.appendChild(actions);
+      panel.appendChild(toolbar);
+      panel.appendChild(body);
+      panel.appendChild(foot);
       projectMobilePanel.appendChild(panel);
+    };
+
+    const renderMobilePanel = (index, { animate = false } = {}) => {
+      if (!projectMobilePanel) return;
+      if (index === renderedMobileIndex && !animate) return;
+
+      if (mobilePanelTimer) {
+        window.clearTimeout(mobilePanelTimer);
+        mobilePanelTimer = 0;
+      }
+
+      if (!animate || !mobileMedia.matches || !projectMobilePanel.childElementCount) {
+        projectMobilePanel.classList.remove("is-swapping");
+        renderMobilePanelContent(index);
+        renderedMobileIndex = index;
+        return;
+      }
+
+      projectMobilePanel.classList.add("is-swapping");
+      mobilePanelTimer = window.setTimeout(() => {
+        renderMobilePanelContent(index);
+        projectMobilePanel.classList.remove("is-swapping");
+        renderedMobileIndex = index;
+        mobilePanelTimer = 0;
+      }, 130);
     };
 
     const scrollToIndex = (index) => {
@@ -542,7 +610,7 @@
         behavior: "smooth",
       });
       setActiveDot(bounded);
-      renderMobilePanel(bounded);
+      renderMobilePanel(bounded, { animate: true });
     };
 
     cards.forEach((_, index) => {
@@ -557,14 +625,19 @@
     setActiveDot(0);
     renderMobilePanel(0);
 
-    let scrollFrame = 0;
     projectTrack.addEventListener("scroll", () => {
       if (scrollFrame) return;
       scrollFrame = window.requestAnimationFrame(() => {
         const current = getNearestIndex();
         activeIndex = current;
         setActiveDot(current);
-        renderMobilePanel(current);
+        if (scrollEndTimer) {
+          window.clearTimeout(scrollEndTimer);
+        }
+        scrollEndTimer = window.setTimeout(() => {
+          if (current === renderedMobileIndex) return;
+          renderMobilePanel(current, { animate: true });
+        }, 110);
         scrollFrame = 0;
       });
     });
@@ -598,6 +671,48 @@
       setActiveDot(activeIndex);
       renderMobilePanel(activeIndex);
     });
+
+    if (projectMobilePanel) {
+      let touchStartX = 0;
+      let touchStartY = 0;
+
+      projectMobilePanel.addEventListener(
+        "touchstart",
+        (event) => {
+          const target = event.target;
+          if (target instanceof Element && target.closest("a")) {
+            touchStartX = 0;
+            touchStartY = 0;
+            return;
+          }
+
+          const touch = event.touches[0];
+          if (!touch) return;
+          touchStartX = touch.clientX;
+          touchStartY = touch.clientY;
+        },
+        { passive: true }
+      );
+
+      projectMobilePanel.addEventListener(
+        "touchend",
+        (event) => {
+          if (!touchStartX && !touchStartY) return;
+          const touch = event.changedTouches[0];
+          if (!touch) return;
+
+          const deltaX = touch.clientX - touchStartX;
+          const deltaY = touch.clientY - touchStartY;
+
+          touchStartX = 0;
+          touchStartY = 0;
+
+          if (Math.abs(deltaX) < 42 || Math.abs(deltaX) <= Math.abs(deltaY)) return;
+          scrollToIndex(getNearestIndex() + (deltaX < 0 ? 1 : -1));
+        },
+        { passive: true }
+      );
+    }
   }
 
   const quickRail = document.querySelector(".quick-rail");
