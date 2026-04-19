@@ -1,10 +1,10 @@
 <!doctype html>
-<html lang="en">
+<html lang="pt-BR">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Portfolio | Kaique Andrade Silva Viana</title>
-  <meta name="description" content="Modern portfolio" />
+  <title id="page-title">Portfólio | Kaique Andrade Silva Viana</title>
+  <meta id="page-description" name="description" content="Portfólio bilíngue de Kaique Andrade Silva Viana, desenvolvedor front-end e full-stack." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=Manrope:wght@400;500;700&display=swap" rel="stylesheet" />
@@ -34,56 +34,47 @@
       </div>
 
       <div class="stat-list">
-        <div><span>Age</span><strong data-bind="profile.age">24</strong></div>
-        <div><span>Residence</span><strong data-bind="profile.residence">Brazil</strong></div>
-        <div><span>Freelance</span><strong class="status-available" data-bind="profile.freelance">Available</strong></div>
-        <div><span>Address</span><strong data-bind="profile.address">Embu das Artes, SP</strong></div>
+        <div><span data-i18n="sidebar.age">Idade</span><strong data-bind="profile.age">24</strong></div>
+        <div><span data-i18n="sidebar.residence">Residência</span><strong data-bind="profile.residence">Brasil</strong></div>
+        <div><span data-i18n="sidebar.freelance">Disponibilidade</span><strong class="status-available" data-bind="profile.freelance">Disponível</strong></div>
+        <div><span data-i18n="sidebar.address">Endereço</span><strong data-bind="profile.address">Embu das Artes, SP</strong></div>
       </div>
 
       <div class="lang-block">
-        <h2>Languages</h2>
-        <p data-bind="profile.languageSummary">English (Intermediate)</p>
+        <h2 data-i18n="sidebar.languages">Idiomas</h2>
+        <p data-bind="profile.languageSummary">Inglês (Intermediário)</p>
       </div>
 
-      <a class="resume-btn" href="#contact" data-bind="profile.primaryCtaLabel" data-bind-href="profile.primaryCtaHref">Contact</a>
+      <div class="locale-switch" role="group" aria-label="Seletor de idioma" data-i18n-aria-label="locale.switcherAria">
+        <span class="locale-switch-label" data-i18n="locale.label">Idioma</span>
+        <div class="locale-switch-actions">
+          <button class="locale-btn" type="button" data-locale="pt-BR">PT-BR</button>
+          <button class="locale-btn" type="button" data-locale="en">EN</button>
+        </div>
+      </div>
+
+      <a class="resume-btn" href="#contact" data-bind="profile.primaryCtaLabel" data-bind-href="profile.primaryCtaHref">Contato</a>
     </aside>
 
     <main class="content-area">
       <section id="resume" class="hero">
         <div class="hero-copy">
-          <p class="eyebrow" data-bind="profile.eyebrow">Professional Summary</p>
-          <h2 data-bind="profile.headline">I build conversion-focused web experiences with strong front-end execution.</h2>
+          <h2 class="hero-title">
+            <span class="hero-type-wrap">
+              <span class="hero-type" data-render="hero-type">Full-stack</span>
+            </span>
+            <span class="hero-title-static" data-i18n="hero.staticTitle">Desenvolvedor</span>
+          </h2>
           <p data-bind="profile.objective">
             Looking for opportunities to apply and improve my front-end and full-stack skills while contributing to reliable solutions.
           </p>
-          <a href="#experience" class="hero-cta" data-bind="profile.heroCtaLabel">Explore Timeline</a>
         </div>
-        <div class="hero-visual">
-          <svg viewBox="0 0 320 260" role="img" aria-label="Decorative abstract profile visualization">
-            <defs>
-              <linearGradient id="shapeA" x1="0" y1="0" x2="1" y2="1">
-                <stop offset="0%" stop-color="#f4b400"/>
-                <stop offset="100%" stop-color="#f6d679"/>
-              </linearGradient>
-              <linearGradient id="shapeB" x1="0" y1="1" x2="1" y2="0">
-                <stop offset="0%" stop-color="#d8deef"/>
-                <stop offset="100%" stop-color="#ffffff"/>
-              </linearGradient>
-            </defs>
-            <rect x="0" y="0" width="320" height="260" rx="22" fill="url(#shapeB)" />
-            <circle cx="102" cy="96" r="66" fill="url(#shapeA)" opacity="0.95" />
-            <circle cx="224" cy="88" r="44" fill="#ffffff" opacity="0.85" />
-            <path d="M56 190 C90 156, 160 146, 248 188" stroke="#1d2433" stroke-width="6" fill="none" stroke-linecap="round" opacity="0.14" />
-            <rect x="62" y="166" width="132" height="18" rx="9" fill="#1d2433" opacity="0.1" />
-            <rect x="62" y="194" width="94" height="12" rx="6" fill="#1d2433" opacity="0.08" />
-          </svg>
-          <div class="insight-grid" data-render="highlights"></div>
-        </div>
+        <div class="insight-grid" data-render="highlights"></div>
       </section>
 
       <section id="experience" class="section-card">
         <div class="section-head">
-          <h3>Professional Experience</h3>
+          <h3 data-i18n="sections.experience">Experiência Profissional</h3>
           <p data-bind="experience.summary">Timeline of internships and junior roles with front-end focus.</p>
         </div>
         <div class="timeline" data-render="experience"></div>
@@ -91,7 +82,7 @@
 
       <section id="education" class="section-card">
         <div class="section-head">
-          <h3>Education</h3>
+          <h3 data-i18n="sections.education">Formação</h3>
           <p data-bind="education.summary">Academic background in systems development and networking.</p>
         </div>
         <div class="timeline timeline-academic" data-render="education"></div>
@@ -99,58 +90,94 @@
 
       <section id="projects" class="section-stack">
         <div class="section-head">
-          <h3>Projects</h3>
+          <h3 data-i18n="sections.projects">Projetos</h3>
           <p data-bind="projects.summary">Selected repositories with practical delivery scope and implementation details.</p>
         </div>
         <div class="project-carousel" data-render="projects-carousel">
-          <button class="project-nav project-nav-prev" type="button" data-action="projects-prev" aria-label="Previous project">
+          <button class="project-nav project-nav-prev" type="button" data-action="projects-prev" aria-label="Projeto anterior" data-i18n-aria-label="project.previous">
             <ion-icon name="chevron-back"></ion-icon>
           </button>
           <div class="project-track-wrap">
             <div class="project-track" data-render="projects"></div>
           </div>
-          <button class="project-nav project-nav-next" type="button" data-action="projects-next" aria-label="Next project">
+          <button class="project-nav project-nav-next" type="button" data-action="projects-next" aria-label="Próximo projeto" data-i18n-aria-label="project.next">
             <ion-icon name="chevron-forward"></ion-icon>
           </button>
         </div>
         <div class="project-mobile-panel" data-render="project-mobile-panel"></div>
-        <div class="project-dots" data-render="project-dots" aria-label="Project slide selectors"></div>
+        <div class="project-dots" data-render="project-dots" aria-label="Seletores de projeto" data-i18n-aria-label="project.selectors"></div>
+      </section>
+
+      <section id="case-study" class="section-stack section-stack-case-study">
+        <div class="section-head">
+          <h3 data-i18n="sections.caseStudy">Case em Destaque</h3>
+          <p data-bind="caseStudy.summary">A deeper look at the project that best represents product thinking, integration depth, and delivery ambition.</p>
+        </div>
+        <div data-render="case-study"></div>
+      </section>
+
+      <section id="services" class="section-card section-card-services">
+        <div class="section-head">
+          <h3 data-i18n="sections.services">Serviços</h3>
+          <p data-bind="services.summary">Practical delivery areas focused on product quality, interface execution, and connected systems.</p>
+        </div>
+        <div data-render="services"></div>
+      </section>
+
+      <section id="workflow" class="section-card section-card-workflow">
+        <div class="section-head">
+          <h3 data-i18n="sections.workflow">Fluxo de Trabalho</h3>
+          <p data-bind="workflow.summary">A delivery process built around clarity, maintainability, and reliable handoff.</p>
+        </div>
+        <div data-render="workflow"></div>
+      </section>
+
+      <section id="skills" class="section-card section-card-skills">
+        <div class="section-head">
+          <h3 data-i18n="sections.skills">Habilidades e Capacidades</h3>
+          <p data-bind="skills.summary">Capability-driven view of the stack, tools, and delivery strengths behind the projects shown in this portfolio.</p>
+        </div>
+        <div data-render="skills"></div>
       </section>
 
       <section id="certifications" class="section-card">
         <div class="section-head">
-          <h3>Certifications</h3>
+          <h3 data-i18n="sections.certifications">Certificações</h3>
           <p data-bind="certifications.summary">Validated technical knowledge and continuous learning track.</p>
         </div>
         <div class="cert-grid" data-render="certifications"></div>
       </section>
 
-      <section id="skills" class="section-card">
+      <section id="faq" class="section-card section-card-faq">
         <div class="section-head">
-          <h3>Skills</h3>
-          <p data-bind="skills.summary">Technology stack organized by practical usage domains.</p>
+          <h3 data-i18n="sections.faq">Perguntas Frequentes</h3>
+          <p data-bind="faq.summary">Practical answers about availability, work style, scope, and delivery approach.</p>
         </div>
-        <div class="skills-grid" data-render="skills"></div>
+        <div data-render="faq"></div>
       </section>
 
       <section id="languages" class="section-card">
         <div class="section-head">
-          <h3>Languages</h3>
+          <h3 data-i18n="sections.languages">Idiomas</h3>
           <p data-bind="languages.summary">Communication proficiency relevant for team and product contexts.</p>
         </div>
         <div class="language-grid" data-render="languages"></div>
       </section>
 
+      <section id="final-cta" class="section-stack section-stack-final-cta">
+        <div data-render="final-cta"></div>
+      </section>
+
       <section id="contact" class="section-card">
         <div class="section-head">
-          <h3>Contact</h3>
-          <p>Open to opportunities in front-end and full-stack development.</p>
+          <h3 data-i18n="sections.contact">Contato</h3>
+          <p data-i18n="contact.intro">Aberto a oportunidades em desenvolvimento front-end e full-stack.</p>
         </div>
         <div class="contact-grid">
           <a class="contact-card" data-bind-href="contact.emailHref" href="#">
             <ion-icon name="mail-open"></ion-icon>
             <div>
-              <span>Email</span>
+              <span data-i18n="contact.email">Email</span>
               <strong data-bind="contact.emailLabel">kaique.viana090@gmail.com</strong>
             </div>
           </a>
@@ -171,7 +198,7 @@
           <a class="contact-card" data-bind-href="contact.phoneHref" href="#">
             <ion-icon name="call"></ion-icon>
             <div>
-              <span>Phone</span>
+              <span data-i18n="contact.phone">Telefone</span>
               <strong data-bind="contact.phoneLabel">+55 11 96813-9649</strong>
             </div>
           </a>
@@ -180,33 +207,33 @@
     </main>
   </div>
 
-  <nav class="quick-rail" aria-label="Quick section navigation">
-    <button class="quick-toggle" type="button" aria-expanded="false" aria-controls="quickRailLinks" aria-label="Open quick menu">
+  <nav class="quick-rail" aria-label="Navegação rápida" data-i18n-aria-label="quickNav.ariaLabel">
+    <button class="quick-toggle" type="button" aria-expanded="false" aria-controls="quickRailLinks" aria-label="Abrir menu rápido">
       <ion-icon name="grid"></ion-icon>
     </button>
     <div id="quickRailLinks" class="quick-links">
-      <a class="quick-item" href="#resume" aria-label="Summary" data-label="Summary" aria-current="page">
+      <a class="quick-item" href="#resume" aria-label="Resumo" data-label="Resumo" data-i18n-aria-label="quickNav.summary" data-i18n-data-label="quickNav.summary" aria-current="page">
         <ion-icon name="home"></ion-icon>
       </a>
-      <a class="quick-item" href="#experience" aria-label="Experience" data-label="Experience">
+      <a class="quick-item" href="#experience" aria-label="Experiência" data-label="Experiência" data-i18n-aria-label="quickNav.experience" data-i18n-data-label="quickNav.experience">
         <ion-icon name="briefcase"></ion-icon>
       </a>
-      <a class="quick-item" href="#education" aria-label="Education" data-label="Education">
+      <a class="quick-item" href="#education" aria-label="Formação" data-label="Formação" data-i18n-aria-label="quickNav.education" data-i18n-data-label="quickNav.education">
         <ion-icon name="school"></ion-icon>
       </a>
-      <a class="quick-item" href="#projects" aria-label="Projects" data-label="Projects">
+      <a class="quick-item" href="#projects" aria-label="Projetos" data-label="Projetos" data-i18n-aria-label="quickNav.projects" data-i18n-data-label="quickNav.projects">
         <ion-icon name="layers"></ion-icon>
       </a>
-      <a class="quick-item" href="#certifications" aria-label="Certifications" data-label="Certifications">
+      <a class="quick-item" href="#certifications" aria-label="Certificações" data-label="Certificações" data-i18n-aria-label="quickNav.certifications" data-i18n-data-label="quickNav.certifications">
         <ion-icon name="ribbon"></ion-icon>
       </a>
-      <a class="quick-item" href="#skills" aria-label="Skills" data-label="Skills">
+      <a class="quick-item" href="#skills" aria-label="Habilidades" data-label="Habilidades" data-i18n-aria-label="quickNav.skills" data-i18n-data-label="quickNav.skills">
         <ion-icon name="construct"></ion-icon>
       </a>
-      <a class="quick-item" href="#languages" aria-label="Languages" data-label="Languages">
+      <a class="quick-item" href="#languages" aria-label="Idiomas" data-label="Idiomas" data-i18n-aria-label="quickNav.languages" data-i18n-data-label="quickNav.languages">
         <ion-icon name="language"></ion-icon>
       </a>
-      <a class="quick-item" href="#contact" aria-label="Contact" data-label="Contact">
+      <a class="quick-item" href="#contact" aria-label="Contato" data-label="Contato" data-i18n-aria-label="quickNav.contact" data-i18n-data-label="quickNav.contact">
         <ion-icon name="mail"></ion-icon>
       </a>
     </div>
